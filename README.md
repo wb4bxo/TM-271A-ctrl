@@ -32,5 +32,9 @@ Arguments passed in can be:
   For example tone 141.3
   Note these must match exactly the standard tones
 
+- pow [h|l]
+
+  Set transmit power to high or low (h or l)
+
 Multiple arguments can be passed but may not make much sense except in
   the case of vfo and tone.

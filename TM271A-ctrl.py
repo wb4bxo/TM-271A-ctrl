@@ -34,6 +34,8 @@ Arguments passed in can be:
     Where {x}xx.x is a 2 or 3 digit whole number followed by a decimal.
     For example tone 141.3 
     Note these must match exactly the standard tones
+  pow [h|l]
+    Set transmit power to high or low (h or l)
 Multiple arguments can be passed but may not make much sense except in 
   the case of vfo and tone.
 """
@@ -176,6 +178,14 @@ def vfoTone(toneFreq, tx, rx):
     sendAndWait(data)
     return
 
+def powerSelect(pow):
+    pow = pow.lower()[0:1]
+    if pow == "h":
+        sendAndWait("PC 0")
+    elif pow == "l":
+        sendAndWait("PC 2")
+    return
+
 # Initialize the serial port as global variable ser
 def serialInit(serPort):
     ser = serial.Serial(
@@ -194,12 +204,18 @@ def serialInit(serPort):
 i=1
 ser = None
 if (len(sys.argv) > 1):
-    if (sys.argv[i].lower() == "ser"):
-        ser = serialInit(sys.argv[i+1])
-        i += 2
-    else:
+    if (sys.argv[i].lower())[0:2] == "-v":
+        verbose = len(sys.argv[i]) - 1
+        i += 1
+        print ("Verbose: " + str(verbose))
+    try:
+        if (sys.argv[i].lower() == "ser"):
+            serialName = sys.argv[i+1]
+            i += 2
         ser = serialInit(serialName)
-    sendAndWait("AE")
+        sendAndWait("AE")
+    except:
+        print("Could not open: " + serialName)
 # serial init must happen first
 while i < len(sys.argv):
     if sys.argv[i].lower() == "mem":
@@ -214,10 +230,9 @@ while i < len(sys.argv):
     elif sys.argv[i].lower() == "ctcss":
         vfoTone(sys.argv[i+1], 0, 1)
         i += 2
-    elif (sys.argv[i].lower())[0:2] == "-v":
-        verbose = len(sys.argv[i]) - 1
-        i += 1
-        print ("Verbose: " + str(verbose))
+    elif sys.argv[i].lower()[0:3] == "pow":
+        powerSelect(sys.argv[i+1])
+        i += 2
     elif sys.argv[i].lower() == "help":
         print(usage)
         break
