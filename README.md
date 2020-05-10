@@ -20,12 +20,14 @@ Arguments passed in can be:
 - vfo xxxxxxxxxx{-|+}
 
   Where xxxxxxxxxx is the 10 digit frequency in Hz.
-  The optional + or - sets the offset
+  The optional + or - sets the offset.
+  This command clears any tone setting, set desired tone afterwards.
 - tone {x}xx.x
 
   Where {x}xx.x is a 2 or 3 digit whole number followed by a decimal.
-  For example tone 141.3
-  Note these must match exactly the standard tones
+  For example tone 141.3.
+  Note these must match exactly the standard tones.
+  If tone freq is "0", the tone setting will be cleared.
 - ctcss {x}xx.x
 
   Where {x}xx.x is a 2 or 3 digit whole number followed by a decimal.

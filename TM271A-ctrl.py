@@ -26,6 +26,7 @@ Arguments passed in can be:
   vfo xxxxxxxxxx{-|+}
     Where xxxxxxxxxx is the 10 digit frequency in Hz.
     The optional + or - sets the offset
+    This command clears any tone setting, set desired tone afterwards
   tone {x}xx.x
     Where {x}xx.x is a 2 or 3 digit whole number followed by a decimal.
     For example tone 141.3 
@@ -153,7 +154,7 @@ def vfoSelect(freq):
         freq = freq[0:10]
     while len(freq) < 10:
         freq = freq + "0"
-    data = current[0:3] + freq + current[13:16] + shift + current[17:]
+    data = current[0:3] + freq + current[13:16] + shift + current[17:20] + "0,0,0" + current[25:]
     sendAndWait(data)
     return
 
@@ -169,7 +170,12 @@ def vfoTone(toneFreq, tx, rx):
     current = sendAndWait("VF")
     if current[-1] == "\r":
         current = current[0:-1]
-    theToneNumber = CTCSS_Tones[toneFreq]   
+    if toneFreq == "0":   #tone of zero to turn off tone
+        tx=0
+        rx=0
+        theToneNumber = "00"
+    else:
+        theToneNumber = CTCSS_Tones[toneFreq]   
     if verbose >= 2:
         print( "Tone set to: " + theToneNumber)
     data = current[0:20] +  str(tx) + "," + str(rx) + ",0," + theToneNumber + "," + theToneNumber + current[31:]

@@ -26,8 +26,10 @@
             "stopOnEntry": true,
             "args": [
                 "-vvv",
-                "vfo",
-                "14733+"
+                "ser",
+                "COM20",
+                "tone",
+                "0"
             ]
         }
     ]
