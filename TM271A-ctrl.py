@@ -44,6 +44,7 @@ serialName=os.getenv("TM271Aser")
 if serialName is None:
     serialName = "/dev/ttyUSB0"
 verbose=0
+radioID = ""
 CTCSS_Tones = { # dictionary for tone to control number for the radio
 "67.0"  : "00", 
 "69.3"  : "01", 
@@ -154,7 +155,7 @@ def vfoSelect(freq):
         freq = freq[0:10]
     while len(freq) < 10:
         freq = freq + "0"
-    data = current[0:3] + freq + current[13:16] + shift + current[17:20] + "0,0,0" + current[25:]
+    data = current[0:3] + freq + ",0," + shift + current[17:20] + "0,0,0" + current[25:]
     sendAndWait(data)
     return
 
@@ -192,6 +193,14 @@ def powerSelect(pow):
         sendAndWait("PC 2")
     return
 
+# Read radio frequency
+def getFreq():
+    rtn = sendAndWait("FQ")
+    # rtn will be "FQ 0147330000,0"
+    mhz = rtn[4:7]
+    khz = rtn[7:13]
+    print(mhz + "." + khz)
+    
 # Initialize the serial port as global variable ser
 def serialInit(serPort):
     ser = serial.Serial(
@@ -209,20 +218,21 @@ def serialInit(serPort):
 #### Start of exectution
 i=1
 ser = None
-if (len(sys.argv) > 1):
-    if (sys.argv[i].lower())[0:2] == "-v":
-        verbose = len(sys.argv[i]) - 1
-        i += 1
-        print ("Verbose: " + str(verbose))
-    try:
-        if (sys.argv[i].lower() == "ser"):
-            serialName = sys.argv[i+1]
-            i += 2
-        ser = serialInit(serialName)
-        sendAndWait("AE")
-    except:
-        print("Could not open: " + serialName)
-# serial init must happen first
+if (len(sys.argv) > i) and ((sys.argv[i].lower())[0:2] == "-v"):
+    # verbose must be first
+    verbose = len(sys.argv[i]) - 1
+    i += 1
+    print ("Verbose: " + str(verbose))
+try:
+    # serial init must happen first or second
+    if (len(sys.argv) > i) and (sys.argv[i].lower() == "ser"):
+        serialName = sys.argv[i+1]
+        i += 2
+    ser = serialInit(serialName)
+    radioID = sendAndWait("ID")
+except:
+    print("Could not open: " + serialName)
+    sys.exit(1)
 while i < len(sys.argv):
     if sys.argv[i].lower() == "mem":
         memorySelect(sys.argv[i+1])
@@ -239,6 +249,9 @@ while i < len(sys.argv):
     elif sys.argv[i].lower()[0:3] == "pow":
         powerSelect(sys.argv[i+1])
         i += 2
+    elif sys.argv[i].lower()[0:4] == "freq":
+        getFreq()
+        i += 1
     elif sys.argv[i].lower() == "help":
         print(usage)
         break
