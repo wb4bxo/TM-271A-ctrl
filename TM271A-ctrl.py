@@ -37,8 +37,10 @@ Arguments passed in can be:
     Note these must match exactly the standard tones
   pow [h|l]
     Set transmit power to high or low (h or l)
-Multiple arguments can be passed but may not make much sense except in 
-  the case of vfo and tone.
+  freq
+    Read frequency from display suitable for use with TTS.
+Multiple arguments can be passed like "mem 33 freq" to change to a memory
+and read back what the frequency is. Or "vfo 147330+ tone 100.0".
 """
 serialName=os.getenv("TM271Aser")
 if serialName is None:
