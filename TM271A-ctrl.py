@@ -20,11 +20,15 @@ Arguments passed in can be:
     Where xxx is the name for the serial port appropriate for the OS.
     For example "ser COM3" for Windows or "ser /dev/tty0" for linux.
     NOTE - must be first argument if used. Environment variable
-    "TM271Aser" is read if it exists as the default port to use.
+    "TM271Aser" or "TM281Aser: is read if it exists as the default
+    port to use.
   mem xxx
     Where xxx is up to a 3 digit memory number
   vfo xxxxxxxxxx{-|+}
     Where xxxxxxxxxx is the 10 digit frequency in Hz.
+    If the leading character is not "1" a zero is appended as the GHz value.
+    If 10 digits is not supplied, "0"s are appended to the end to 13 digits.
+    Thus you can enter 0147330000 or 14733 for the same thing.
     The optional + or - sets the offset
     This command clears any tone setting, set desired tone afterwards
   tone {x}xx.x
@@ -44,7 +48,9 @@ and read back what the frequency is. Or "vfo 147330+ tone 100.0".
 """
 serialName=os.getenv("TM271Aser")
 if serialName is None:
-    serialName = "/dev/ttyUSB0"
+    serialName=os.getenv("TM281Aser")
+    if serialName is None:
+        serialName = "/dev/ttyUSB0"
 verbose=0
 radioID = ""
 CTCSS_Tones = { # dictionary for tone to control number for the radio
