@@ -205,9 +205,8 @@ def powerSelect(pow):
 def getFreq():
     rtn = sendAndWait("FQ")
     # rtn will be "FQ 0147330000,0"
-    mhz = rtn[4:7]
-    khz = rtn[7:13]
-    print(mhz + "." + khz)
+    Hz = rtn[3:13]
+    print(Hz)
     
 # Initialize the serial port as global variable ser
 def serialInit(serPort):
